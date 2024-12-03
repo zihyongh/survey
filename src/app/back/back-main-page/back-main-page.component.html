@@ -1,0 +1,11 @@
+<mat-toolbar color="primary">
+  <span style="margin-left: 10px">問卷管理系統</span>
+  <span class="spacer"></span>
+  <button mat-button class="button" (click)="toMain()">首頁</button>
+  <button mat-button class="button" (click)="toBackCreate()">新增問卷</button>
+  <button mat-button class="button" (click)="logout()">登出</button>
+</mat-toolbar>
+
+<div class="content">
+  <router-outlet></router-outlet>
+</div>

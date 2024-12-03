@@ -1,0 +1,67 @@
+.title h2{
+  text-align: center;
+  margin-top: 80px;
+  font-size: 30px;
+}
+
+// 表格樣式
+.tableArea {
+  width: 800px;
+  margin: auto;
+  gap: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pageArea {
+  width: 800px;
+  margin: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: "Noto Serif TC", serif;
+}
+
+.mat-mdc-row {
+  height: 40px ;
+  // background-color: antiquewhite !important;
+}
+
+.mat-mdc-row:nth-child(odd) {
+  background-color: #F4F6F8 ;
+}
+
+.mat-mdc-row:nth-child(even) {
+  background-color: #ffffff ;
+}
+
+.mat-mdc-cell,
+.mat-mdc-header-cell {
+  border: none ;
+}
+
+.mat-mdc-header-cell {
+  background-color: #A3B0C7 !important;
+  font-weight: bold ;
+}
+
+.tableArea .mat-mdc-table tbody{
+  text-align: center ;
+}
+
+
+// 查看圖表按鈕
+.buttonArea{
+
+  button{
+    padding: 8px 16px;
+    margin: 20px 300px;
+    font-size: 18px;
+    color: #fff;
+    background-color: #7db3ab;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+}
+
+
+

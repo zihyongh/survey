@@ -1,0 +1,32 @@
+.mat-toolbar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  z-index: 100;
+  background-color: #d7d4d2;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.content {
+  margin-top: 80px;     // 避免內容被固定的 toolbar 覆蓋
+}
+
+.button{
+  padding: 8px 16px;
+  margin: 0 20px;
+  font-size: 15px;
+  color: #fff;
+  background-color: #7db3ab;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover{
+  background-color:#648f88e5;
+}

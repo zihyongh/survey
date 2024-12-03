@@ -1,0 +1,101 @@
+<main id="main">
+  <!-- 題目和說明 -->
+  <div class="title" id="title">
+    <h1 id="big">{{survey.title}}</h1>
+    <p id="small">{{survey.describe}}</p>
+  </div>
+
+
+  <form [formGroup]="basicFormGroup" >
+
+    <!-- 基本資料輸入欄 -->
+    <div class="form-container">
+      <div class="form-group">
+        <label for="name">姓名:</label>
+        <input type="text" id="name" placeholder="請輸入姓名(必填)" formControlName="name" >
+        <div *ngIf="basicFormGroup.get('name')?.invalid && basicFormGroup.get('name')?.touched" class="error">
+          此欄為必填!
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">手機:</label>
+        <input type="tel" id="phone" placeholder="請輸入手機號碼(必填)" formControlName="phone" >
+        <div *ngIf="basicFormGroup.get('phone')?.errors?.['required'] && basicFormGroup.get('phone')?.touched" class="error">
+          此欄為必填!
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">E-mail:</label>
+        <input type="email" id="email" placeholder="請輸入E-mail" formControlName="email">
+        <div *ngIf="basicFormGroup.get('email')?.errors?.['email'] && basicFormGroup.get('email')?.touched" class="error">
+          請輸入有效的 Email 格式!
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="age">年齡:</label>
+        <input type="number" id="age" placeholder="請輸入年齡" formControlName="age">
+        <div *ngIf="basicFormGroup.get('age')?.errors?.['min'] && basicFormGroup.get('age')?.touched" class="error">
+          年齡不得小於 0!
+        </div>
+        <div *ngIf="basicFormGroup.get('age')?.errors?.['max'] && basicFormGroup.get('age')?.touched" class="error">
+          年齡不得大於 120!
+        </div>
+      </div>
+    </div>
+
+
+    <!-- 題目區域 -->
+    <div class="questionArea">
+
+      @for (question of survey.questionData; track $index) {
+        <p>{{question.questionId}}.{{question.questionTitle}}
+        @if (question.required){
+          <span style="color:brown">*</span>
+        }
+        </p>
+
+
+        <!-- 單選題 -->
+        @if(question.questionType == 'single') {
+          @for (option of question.questionContent; track $index) {
+            <label class="option-label">
+              <input type="radio" [value]="option.optionName" [formControlName]="'question'  + question.questionId">
+              {{option.option}}
+            </label>
+            <br>
+          }
+        }
+
+        <!-- 多選題 -->
+        @if(question.questionType == 'multi') {
+          @for (option of question.questionContent; track $index) {
+            <label class="option-label">
+              <input type="checkbox" [checked]="selectedOptions[question.questionId].includes(option.optionName)"
+              (change)="onCheckboxChange(question.questionId, option.optionName, $event)"
+              >
+              {{option.option}}
+            </label>
+            <br>
+          }
+        }
+
+        <!-- 填充題 -->
+        @if(question.questionType == 'text') {
+          <textarea [formControlName]="'question' + question.questionId" placeholder="請輸入答案"></textarea>
+          <br>
+          <br>
+        }
+      }
+
+    </div>
+
+    <div style="text-align: right;">
+      <button style="margin-right: 5px;" type="button" (click)="backToList()">回上頁</button>
+      <button type="button" (click)="saveAnswersToService()" [disabled]="!basicFormGroup.valid">預覽</button>
+    </div>
+
+  </form>
+</main>

@@ -1,0 +1,29 @@
+<div class="backGround">
+  <div class="loginContainer">
+    <div class="loginTitle">
+      <h2>管理者登入🔑</h2>
+      <br>
+      <p>使用帳號密碼登入</p>
+    </div>
+    <form [formGroup]="loginGroup">
+      <div class="loginArea">
+        <label for="account">帳號</label>
+        <input id="account" placeholder="請輸入帳號" formControlName="account">
+      </div>
+      <div class="loginArea">
+        <label for="password">密碼</label>
+        <input type="{{showPassword? 'text' : 'password'}}" id="password" placeholder="請輸入密碼" formControlName="password">
+        <span class="password-toggle-icon">
+          <mat-icon fontIcon="{{showPassword? 'visibility' : 'visibility_off'}}" (click)="changePasswordIcon()"></mat-icon>
+        </span>
+      </div>
+      <button class="btn btn-signin" (click)="login();showFormData()" [disabled]="!loginGroup.valid">登入</button>
+    </form>
+  </div>
+</div>
+
+<!-- 之前寫的 -->
+<!-- <label for="email">Email</label>
+      <input type="email" id="email" placeholder="test@atheros.ai" required>
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="******" required> -->

@@ -1,0 +1,79 @@
+<div class="title" id="title">
+  <h2 id="big">{{survey.title}}</h2>
+  <p id="small">{{survey.describe}}</p>
+</div>
+
+<!-- 基本資料輸入欄 -->
+<div class="form-container">
+  <div class="form-group">
+    <label for="name">姓名:</label>
+    <input type="text" id="name" placeholder="請輸入姓名(必填)"  >
+  </div>
+
+  <div class="form-group">
+    <label for="phone">手機:</label>
+    <input type="tel" id="phone" placeholder="請輸入手機號碼(必填)"  >
+  </div>
+
+  <div class="form-group">
+    <label for="email">E-mail:</label>
+    <input type="email" id="email" placeholder="請輸入E-mail" >
+  </div>
+
+  <div class="form-group">
+    <label for="age">年齡:</label>
+    <input type="number" id="age" placeholder="請輸入年齡">
+  </div>
+</div>
+
+
+
+<!-- 題目區域 -->
+<div class="questionArea">
+
+  @for (mySurvey of survey.questionData; track $index ; let i = $index) {
+    <p>{{i + 1}}.{{mySurvey.questionTitle}}
+    @if (mySurvey.required){
+      <span style="color:brown">*</span>
+    }
+    </p>
+
+
+    <!-- 單選題 -->
+    @if(mySurvey.questionType == 'single') {
+      @for (option of mySurvey.questionContent; track $index) {
+        <label class="option-label">
+          <input type="radio" value="{{option.code}}">
+          {{option.option}}
+        </label>
+        <br>
+      }
+    }
+
+    <!-- 多選題 -->
+    @if(mySurvey.questionType == 'multi') {
+      @for (option of mySurvey.questionContent; track $index) {
+        <label class="option-label">
+          <input type="checkbox" value="{{option.code}}" >
+          {{option.option}}
+        </label>
+        <br>
+      }
+    }
+
+    <!-- 填充題 -->
+    @if(mySurvey.questionType == 'text') {
+      <textarea></textarea>
+      <br>
+      <br>
+    }
+  }
+
+</div>
+
+<!-- 按鈕 -->
+<div style="text-align: right;">
+  <button style="margin-right: 200px;margin-bottom: 100px;" (click)="backToList()">回上頁</button>
+</div>
+
+

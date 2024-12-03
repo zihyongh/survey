@@ -1,0 +1,71 @@
+<main id="main">
+  <!-- 題目和說明 -->
+  <div class="title" id="title">
+    <h1 id="big">{{confirmSurvey.title}}</h1>
+    <p id="small">{{confirmSurvey.describe}}</p>
+  </div>
+
+
+  <!-- 基本資料輸入欄 -->
+  <div class="form-container">
+
+    <div class="form-group">
+      <span>姓名:</span>
+      {{confirmAnswers.name}}
+    </div>
+
+    <div class="form-group">
+      <span>電話:</span>
+      {{confirmAnswers.phone}}
+    </div>
+
+    <div class="form-group">
+      <span>Email:</span>
+      {{confirmAnswers.email}}
+
+    </div>
+
+    <div class="form-group">
+      <span>年齡:</span>
+      {{confirmAnswers.age}}
+    </div>
+
+  </div>
+
+  <div class="questionArea">
+
+    <!-- 題目答案確認 -->
+    @for (title of confirmSurvey.questionData; track $index ; let i = $index) {
+      <p>{{i + 1}}.{{title.questionTitle}}</p>
+
+      <!-- 單選 -->
+      @if(title.questionType == 'single'){
+        @for (option  of title.questionContent; track $index) {
+          @if(option.optionName === getAnswerByQuestionId(title.questionId)){
+            <p>{{option.option }}</p>
+          }
+        }
+      }
+      <!-- 多選 -->
+      @if (title.questionType == 'multi') {
+        @for (option of title.questionContent; track $index){
+          @if (getAnswerByQuestionId(title.questionId)?.includes(option.optionName)) {
+            <p>答案: {{ option.option }}</p>
+          }
+       }
+      }
+      <!-- 填充 -->
+      @if (title.questionType === 'text') {
+        <p>{{ getAnswerByQuestionId(title.questionId) }}</p>
+      }
+    }
+
+
+    <!-- 按鈕 -->
+    <div style="text-align: right;">
+      <button (click)="backToSurvey()">回上頁</button>
+    </div>
+    <br>
+
+  </div>
+</main>

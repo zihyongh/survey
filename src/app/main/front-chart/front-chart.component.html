@@ -1,0 +1,11 @@
+@for (mySurvey of survey.questionData; track $index) {
+  <app-chart-demo class="chartCss" [dataId]="mySurvey.questionId" [questData]="mySurvey"></app-chart-demo>
+  <br><br>
+
+}
+
+
+<!-- 按鈕 -->
+<div style="text-align: right;">
+  <button (click)="backToSurvey()">回上頁</button>
+</div>

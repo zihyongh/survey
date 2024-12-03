@@ -1,0 +1,11 @@
+<mat-toolbar color="primary">
+  <span style="margin-left: 10px">問卷填答系統</span>
+  <span class="spacer"></span>
+  <button mat-button class="button" (click)="toMain()" >首頁</button>
+  <button mat-button class="button" (click)="toLogin()" >我是管理者</button>
+</mat-toolbar>
+
+<div class="content">
+  <router-outlet></router-outlet>
+</div>
+
