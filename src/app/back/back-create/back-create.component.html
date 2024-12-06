@@ -23,7 +23,7 @@
       <div class="form-group">
         <label for="startDate">開始日期</label>
         <!-- input可以綁定ngmodel -->
-        <input id="startDate" type="date" [min]="startMinDate" formControlName="startDate" required>
+        <input id="startDate" type="date" [(ngModel)]="inputStartDate" [min]="startMinDate" formControlName="startDate" (change)="changeSDate()" required>
         <div *ngIf="basicFormGroup1.get('startDate')?.invalid && basicFormGroup1.get('startDate')?.touched"
           class="error">
           此欄為必填!
@@ -33,7 +33,7 @@
       <div class="form-group">
         <label for="endDate">結束日期</label>
         <!-- input可以綁定ngmodel -->
-        <input id="endDate" type="date" [min]="endMinDate" formControlName="endDate" required>
+        <input id="endDate" type="date" [(ngModel)]="endDate" [min]="inputStartDate" formControlName="endDate" required>
         <div *ngIf="basicFormGroup1.get('endDate')?.invalid && basicFormGroup1.get('endDate')?.touched" class="error">
           此欄為必填!
         </div>
@@ -229,6 +229,9 @@
           @if (mySurvey.required){
             <span style="color:brown">*</span>
           }
+          @if(mySurvey.questionType == "multi"){
+            <span>(多選)</span>
+          }
           </p>
 
 
@@ -272,6 +275,7 @@
 
     <button mat-button matStepperPrevious>回到「問卷問題」</button>
     <button mat-button matStepperNext (click)="finalizeSurvey()">儲存</button>
+    <button mat-button matStepperNext (click)="finalizeSurveyAndPublish()">儲存並發布</button>
 
   </mat-step>
 </mat-horizontal-stepper>

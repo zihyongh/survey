@@ -227,6 +227,9 @@
           @if (mySurvey.required){
             <span style="color:brown">*</span>
           }
+          @if(mySurvey.questionType == "multi"){
+            <span>(多選)</span>
+          }
           </p>
 
 
@@ -269,8 +272,8 @@
     <!-- <button (click)="test()">測試</button> -->
 
     <button mat-button matStepperPrevious>回到「問卷問題」</button>
-    <button mat-button matStepperNext  (click)="finalizeSurvey()">僅儲存</button>
-    <button mat-button matStepperNext >儲存並發布</button>
+    <button mat-button matStepperNext (click)="finalizeSurvey()">更新</button>
+    <button mat-button matStepperNext (click)="finalizeSurveyAndPublish()">更新並發布</button>
 
   </mat-step>
 </mat-horizontal-stepper>

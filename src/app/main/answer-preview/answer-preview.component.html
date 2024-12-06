@@ -2,7 +2,7 @@
   <!-- 題目和說明 -->
   <div class="title" id="title">
     <h1 id="big">{{survey.title}}</h1>
-    <p id="small">{{survey.describe}}</p>
+    <p id="small">{{survey.description}}</p>
   </div>
 
 
@@ -35,40 +35,40 @@
   <div class="questionArea">
 
     <!-- 題目答案確認 -->
-    @for (question  of survey.questionData; track $index ; let i = $index) {
-      <p>{{i + 1}}.{{question .questionTitle}}</p>
+    @for (question of survey.quesList; track $index ; let i = $index) {
+      <p>{{i + 1}}.{{question.questionTitle}}</p>
 
       <!-- 單選 -->
       @if(question.questionType == 'single'){
-        @for (option of question.questionContent; track $index) {
-          @if (option.optionName === getAnswerByQuestionId(question.questionId)) {
-            <p>答案: {{option.option}}</p>
+        <p>答案: {{ previewAns.answers[question.questionId]  || '未填寫' }}</p>
+        }
+
+
+        <!-- 多選 -->
+        @if (question.questionType == 'multi') {
+          @if(previewAns.answers[question.questionId]?.length){
+            <p>答案:</p>
+            @for (option of previewAns.answers[question.questionId]; track $index) {
+              <p>-{{ option }}</p>
+            }
+          }@else {
+          <p>未填寫</p>
           }
         }
-      }
 
 
-      <!-- 多選 -->
-      @if (question.questionType == 'multi') {
-        @for (option of question.questionContent; track $index) {
-          @if (getAnswerByQuestionId(question.questionId)?.includes(option.optionName)) {
-            <p>答案: {{option.option}}</p>
-          }
+        <!-- 填充 -->
+        @if(question.questionType == 'text'){
+        <p>答案: {{ previewAns.answers[question.questionId] || '未填寫'  }}</p>
         }
       }
-
-
-      <!-- 填充 -->
-      @if(question.questionType == 'text'){
-        <p>答案: {{getAnswerByQuestionId(question.questionId)}}</p>
-      }
-    }
 
 
     <!-- 按鈕 -->
     <div style="text-align: right;">
       <button style="margin-right: 5px;" (click)="backToSurvey()">回上頁</button>
-      <button (click)="saveToList()">儲存</button>
-  </div><br>
+      <button (click)="submitAnswers()">儲存</button>
+    </div><br>
+
   </div>
 </main>

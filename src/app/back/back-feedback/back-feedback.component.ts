@@ -12,7 +12,9 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { Router, RouterLink } from '@angular/router';
 import {MatTabsModule} from '@angular/material/tabs';
 import { Chart } from 'chart.js/auto'
-
+import { HttpClient } from '@angular/common/http';
+import { Router as AppRouter, ActivatedRoute } from '@angular/router';
+import { HttpClientService } from '../../../@services/http-client.service';
 
 @Component({
   selector: 'app-back-feedback',
@@ -26,19 +28,99 @@ import { Chart } from 'chart.js/auto'
 
 export class BackFeedbackComponent {
 
-  displayedColumns: string[] = ['id', 'name', 'time', 'feedback'];
-
-  dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
+  displayedColumns: string[] = ['id', 'name', 'time', 'actions'];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  constructor(private router: Router ) { }
+  dataSource = new MatTableDataSource<any>([]);
+  quizId!: number; // 問卷 ID
+  title!: string; // 問卷標題
+
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private http: HttpClientService
+  ) { }
+
+
+  ngOnInit(): void {
+    // 從 URL 中獲取 quizId
+    this.route.queryParams.subscribe((params) => {
+      this.quizId = +params['quizId'];
+
+      if (!this.quizId) {
+        alert('未指定問卷 ID 或問卷標題，返回列表頁！');
+        this.router.navigate(['/backMain/backList']);
+      } else {
+        this.loadFeedback(); // 加載回饋數據
+      }
+    });
+  }
+
+
+  // 加載問卷回饋數據
+  loadFeedback(): void {
+    const url = `http://localhost:8080/quiz/feedback?quizId=${this.quizId}`;
+    this.http.getApi <{ code: number; feedbackDtoList: any[] }> (url).subscribe({
+      next: (res: any) => {
+        if (res.code === 200 && res.feedbackDtoList) {
+          this.dataSource.data = this.groupFeedback(res.feedbackDtoList);
+          console.log('回饋數據:', this.dataSource);
+        } else {
+          console.error('回饋數據加載失敗:', res.message);
+        }
+      },
+      error: (err) => {
+        console.error('API 請求失敗:', err);
+      },
+    });
+  }
+
+  // 格式化數據
+  groupFeedback(feedbackList: any[]): any[] {
+    const grouped = feedbackList.reduce((acc, item) => {
+      const key = `${item.email}-${item.fillinDate}`;
+      if (!acc[key]) {
+        acc[key] = {
+          name: item.userName,
+          email: item.email,
+          phone: item.phone,
+          age: item.age,
+          time: item.fillinDate,
+          quizName: item.quizName,
+          quizDesc: item.quizDesc,
+          answers: [],
+        };
+      }
+      acc[key].answers.push({ question: item.questionTitle, answer: JSON.parse(item.answerStr) });
+      return acc;
+    }, {});
+    return Object.values(grouped);
+  }
+
+
+  // 查看個人回復
+  viewIndividualFeedback(feedback: any): void {
+    this.router.navigate(['/backMain/backConfirm'], {
+      queryParams: { quizId: this.quizId },
+      state: { feedback },
+    });
+  }
+
+  // 點擊 "查看統計總表" 按鈕
+  toChart(): void {
+    this.router.navigate(['/backMain/chart'], { queryParams: { quizId: this.quizId , source: 'back'} });
+  }
+
+
+  backToList(){
+    this.router.navigateByUrl('/backMain');
+  }
 
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
-
-
 
     // 以下是資料排列的code
     // 前面要寫 "this.dataSource.data =" 是因為要把原本的資料取代成已排序的樣子
@@ -57,21 +139,9 @@ export class BackFeedbackComponent {
 
   }
 
-  toChart(){
-    this.router.navigateByUrl('/chartData');
-  }
+
+
 
 }
 
-export interface PeriodicElement {
-  id: number;
-  name: string;
-  time: string;
-  feedback: string;
-}
 
-const ELEMENT_DATA: PeriodicElement[] = [
-  { id:1 , name: '阿貓' , time: '2024-11-13 20:55' , feedback: '前往'},
-  { id:2 , name: '阿狗' , time: '2024-11-20 18:55' , feedback: '前往'},
-  { id:3 , name: '阿豬' , time: '2024-11-20 18:55' , feedback: '前往'}
-];

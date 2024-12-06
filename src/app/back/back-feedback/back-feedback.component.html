@@ -8,7 +8,7 @@
     <!-- id Column -->
     <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef> 編號 </th>
-      <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+      <td mat-cell *matCellDef="let element ; ; let i = index"> #{{i + 1}} </td>
     </ng-container>
 
     <!-- name Column -->
@@ -24,10 +24,10 @@
     </ng-container>
 
     <!-- start Column -->
-    <ng-container matColumnDef="feedback">
+    <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef> 查看回覆 </th>
       <td mat-cell *matCellDef="let element">
-        <a routerLink="/backMain/backConfirm"> {{element.feedback}} </a>
+        <a (click)="viewIndividualFeedback(element)" [routerLink]="['/backMain/backConfirm']" >前往</a>
       </td>
     </ng-container>
 
@@ -45,6 +45,7 @@
 
 <div class="buttonArea">
   <button (click)="toChart()">查看統計總表</button>
+  <button (click)="backToList()">返回列表</button>
 </div>
 
 

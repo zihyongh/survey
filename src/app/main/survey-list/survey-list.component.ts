@@ -1,3 +1,4 @@
+import { WriteService } from './../../../@services/write-service';
 import { EditService } from './../../../@services/edit-service';
 import { DateService } from './../../../@services/date-service';
 import { Component, ViewChild } from '@angular/core';
@@ -38,7 +39,8 @@ export class SurveyListComponent {
   constructor(
     private dateService: DateService,
     private router: Router,
-    private http: HttpClientService
+    private http: HttpClientService,
+    private writeService: WriteService
   ) { }
 
 
@@ -80,7 +82,7 @@ export class SurveyListComponent {
 
 
   // 下面是搜尋框輸入的條件
-  ngOnInIt(): void {
+  ngOnInit(): void {
     // 設定選取日期最小值為當天
     this.minDate = this.dateService.changeDateFormat(new Date(), '/');
     // 設定選取日期最大值為當天+30天
@@ -105,7 +107,8 @@ export class SurveyListComponent {
         next: (res) => {
           if (res.code == 200 && res.quizList) {
             // 格式化後端數據到前端格式
-            const formattedData = res.quizList.map((quiz) => ({
+            const formattedData = res.quizList.filter(quiz => quiz.published) // 只保留已發布的問卷
+            .map((quiz) => ({
               id: quiz.id,
               title: quiz.title,
               status: this.getStatus(quiz.startDate, quiz.endDate, quiz.published),
@@ -113,6 +116,7 @@ export class SurveyListComponent {
               end: quiz.endDate
             }));
             this.dataSource.data = formattedData; // 更新表格數據
+            console.log(formattedData);
           }
           else {
             console.error('後端返回數據格式不正確:', res);
@@ -131,6 +135,10 @@ export class SurveyListComponent {
     const today = new Date();
     const start = new Date(startDate);
     const end = new Date(endDate);
+
+    if (!published) {
+      return '未發布';        // 雖然理論上已被過濾掉，但為了安全，仍保留此條件
+    }
 
     if (today < start) {
       return '未開始';
@@ -158,7 +166,9 @@ export class SurveyListComponent {
           console.log('搜尋結果:', response);
           // 更新資料表
           if (response && response.quizList) {
-            this.dataSource.data = response.quizList.map((quiz: any) => ({
+            this.dataSource.data = response.quizList
+            .filter((quiz: any) => quiz.published) // 只保留已發布的問卷
+            .map((quiz: any) => ({
               id: quiz.id,
               title: quiz.title,
               status: this.getStatus(quiz.startDate, quiz.endDate, quiz.published), // 根據日期計算狀態
@@ -175,6 +185,79 @@ export class SurveyListComponent {
       });
   }
 
+
+  // 清空搜尋條件並恢復問卷列表
+  clearSearch(): void {
+    // 清空搜尋條件
+    this.inputName = '';
+    this.inputStartDate = '';
+    this.inputEndDate = '';
+
+    // 重新載入初始問卷列表
+    this.loadQuizzes();
+  }
+
+
+
+
+  // 進入填寫
+  onSelectSurvey(id: number): void {
+    console.log('選中的問卷 ID:', id);
+    const payload = { id }; // 組裝請求體
+    this.http.postApi<{
+      code: number;
+      message: string;
+      id: number;
+      title: string;
+      description: string;
+      startDate: string;
+      endDate: string;
+      published: boolean;
+      quesList: any[];
+    }>('http://localhost:8080/quiz/getById', payload)
+      .subscribe({
+        next: (res) => {
+          if (res.code === 200) {
+            // 格式化數據，特別是將 quesList 的 questionContent 字段轉換為 JSON
+            const formattedSurvey = {
+              id: res.id,
+              title: res.title,
+              description: res.description,
+              startDate: res.startDate,
+              endDate: res.endDate,
+              published: res.published,
+              quesList: res.quesList.map((ques) => ({
+                ...ques,
+                questionContent: ques.questionContent ? JSON.parse(ques.questionContent) : [] // 將字符串解析為對象
+              }))
+            };
+            // 將數據存入 WriteService
+            this.writeService.setSurvey(formattedSurvey);
+            console.log("要存入的問題:", formattedSurvey);
+            // 確保資料存儲後直接導航
+            this.router.navigate(['/frontMain/surveyWrite']);
+          } else {
+            alert('獲取問卷資料失敗，請稍後再試！');
+          }
+        },
+        error: (error) => {
+          console.error('獲取問卷資料失敗:', error);
+          alert('無法連接後端服務，請稍後再試！');
+        }
+      });
+  }
+
+
+
+  // 點擊「前往」查看統計
+  onViewFeedback(quizId: number): void {
+    console.log('查看問卷回饋，問卷 ID:', quizId);
+    this.router.navigate(['/frontMain/chart'], { queryParams: { quizId , source: 'front' } });
+  }
+
+
+
+
 }
 
 
@@ -183,7 +266,7 @@ export class SurveyListComponent {
 export interface Quiz {
   id: number;
   title: string;
-  status: string;     // "已結束"、"進行中"、"未發布"
+  status: string;     // "已結束"、"進行中"、"未開始" // 不顯示未發布
   start: string;      // Start date
   end: string;        // End date
 }

@@ -23,7 +23,7 @@
 }
 
 #small {
-  font-size: 14px;
+  font-size: 20px;
   font-family: Lucida Calligraphy;
 }
 
@@ -32,11 +32,11 @@
 // 基本資料輸入欄區
 .form-container {
   background-color: #EBEAE9;
-  padding: 20px;
+  padding: 10px 20px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   width: 700px;
-  height: 200px;
+  height: 210px;
   margin: auto;
   margin-bottom: 20px;
 }
@@ -77,17 +77,24 @@
 
 
 // 問題區域
-.questionArea {
-  width: 700px;
-  padding: 5px;
-  margin: auto;
+/* 增加每題之間的間距 */
+.questionArea p {
+  margin-top: 20px;
+  font-weight: bold;
+  padding-left: 20px;
+}
+
+.questionArea div {
+  margin-bottom: 20px;
+  padding-left: 20px;
+}
+
+label {
+  display: block;
+  margin: 5px 0;
 }
 
 
-.option-label {
-  display: flex;
-  align-items: center;
-}
 
 // 按鈕
 button{

@@ -148,11 +148,11 @@ export class BackCreateComponent {
 
       // 建立問題物件
       const question = {
-        questionId: this.editIndex !== null ? this.questionData[this.editIndex].questionId : this.questionId++, // 如果在編輯模式，保持原 ID
+        questionId: this.questionData.length + 1, // 臨時的 questionId
         questionTitle: this.basicFormGroup2.value.questionTitle,
         questionType: questionType,
         required: this.basicFormGroup2.value.required,
-        questionContent: questionType === 'text' ? [] : [...this.options], // 填充題不需要選項
+        questionContent: questionType == 'text' ? [] : [...this.options], // 填充題不需要選項
       };
 
 
@@ -181,19 +181,26 @@ export class BackCreateComponent {
   endDate!: string
   startMinDate!: string;
   endMinDate!: string;
+  startDate!: string;
+  inputStartDate!:string;
 
 
   // 日期轉換
   ngOnInit(): void {
 
     // 設定選取日期最小值為當天
-    this.startMinDate = this.dateService.changeDateFormat(this.dateService.addDate(new Date(), 2));
-    // 設定選取日期最小值為當天+天
-    this.endMinDate = this.dateService.changeDateFormat(this.dateService.addDate(new Date(), 7));
-
+    this.startMinDate = this.dateService.changeDateFormat(this.dateService.addDate(new Date(), 0));
     console.log('當前預覽問卷:', this.survey);
 
   }
+
+
+
+  // 隨開始日期變動，改變結束日期
+  changeSDate() {
+    this.endMinDate = this.dateService.changeDateFormat(this.dateService.addDate(new Date(this.inputStartDate), 0));
+  }
+
 
 
 
@@ -211,43 +218,6 @@ export class BackCreateComponent {
     console.log(this.survey);                                 // 確認資料是否成功添加
     this.backService.BackAnswer = this.survey;                // 存入service
   }
-
-
-  finalizeSurvey(): void {
-    // 整理資料
-    const tidyData = {
-      title: this.backService.BackAnswer.title,
-      description: this.backService.BackAnswer.description,
-      startDate: this.backService.BackAnswer.startDate,
-      endDate: this.backService.BackAnswer.endDate,
-      published: false, // 假設預設為 false
-      quesList: this.backService.BackAnswer.questionData.map((question: any) => ({
-        questionId: question.questionId,
-        questionTitle: question.questionTitle,
-        questionType: question.questionType,
-        required: question.required,
-        questionContent: JSON.stringify(question.questionContent), // 將選項轉為 JSON 字符串
-      })),
-    };
-
-    console.log('準備送出的資料:', tidyData);
-
-    // 發送整理好的資料到 API
-    this.http.postApi('http://localhost:8080/quiz/create', tidyData)
-    .subscribe({
-      next: (res) => {
-        console.log('成功儲存:', res);
-        alert('問卷已成功儲存！'); // 顯示成功提示
-        this.router.navigateByUrl('/backMain'); // 成功後跳轉頁面
-      },
-      error: (error) => {
-        console.error('儲存過程中出現錯誤:', error);
-        alert('儲存失敗，請稍後再試！'); // 顯示錯誤提示
-      }
-    });
-
-  }
-
 
 
 
@@ -291,6 +261,81 @@ export class BackCreateComponent {
     this.options = [...questionToEdit.questionContent];
     this.editIndex = index;
   }
+
+
+  finalizeSurvey(): void {
+    // 整理資料
+    const tidyData = {
+      title: this.backService.BackAnswer.title,
+      description: this.backService.BackAnswer.description,
+      startDate: this.backService.BackAnswer.startDate,
+      endDate: this.backService.BackAnswer.endDate,
+      published: false, // 假設預設為 false
+      quesList: this.backService.BackAnswer.questionData.map((question: any , index: number) => ({
+        questionId: index + 1, // 按順序重新分配連續的 questionId
+        questionTitle: question.questionTitle,
+        questionType: question.questionType,
+        required: question.required,
+        questionContent: JSON.stringify(question.questionContent), // 將選項轉為 JSON 字符串
+      })),
+    };
+
+    console.log('準備送出的資料:', tidyData);
+
+    // 發送整理好的資料到 API
+    this.http.postApi('http://localhost:8080/quiz/create', tidyData)
+    .subscribe({
+      next: (res) => {
+        console.log('成功儲存:', res);
+        alert('問卷已成功儲存！'); // 顯示成功提示
+        this.router.navigateByUrl('/backMain'); // 成功後跳轉頁面
+      },
+      error: (error) => {
+        console.error('儲存過程中出現錯誤:', error);
+        alert('儲存失敗，請稍後再試！'); // 顯示錯誤提示
+      }
+    });
+
+  }
+
+
+  finalizeSurveyAndPublish(): void {
+    // 整理資料
+    const tidyData = {
+      title: this.backService.BackAnswer.title,
+      description: this.backService.BackAnswer.description,
+      startDate: this.backService.BackAnswer.startDate,
+      endDate: this.backService.BackAnswer.endDate,
+      published: true,        // 假設預設為 false
+      quesList: this.backService.BackAnswer.questionData.map((question: any , index: number) => ({
+        questionId: index + 1, // 按順序重新分配連續的 questionId
+        questionTitle: question.questionTitle,
+        questionType: question.questionType,
+        required: question.required,
+        questionContent: JSON.stringify(question.questionContent), // 將選項轉為 JSON 字符串
+      })),
+    };
+
+    console.log('準備送出的資料:', tidyData);
+
+    // 發送整理好的資料到 API
+    this.http.postApi('http://localhost:8080/quiz/create', tidyData)
+    .subscribe({
+      next: (res) => {
+        console.log('成功儲存:', res);
+        alert('問卷已成功儲存並發布！'); // 顯示成功提示
+        this.router.navigateByUrl('/backMain'); // 成功後跳轉頁面
+      },
+      error: (error) => {
+        console.error('儲存過程中出現錯誤:', error);
+        alert('儲存失敗，請稍後再試！'); // 顯示錯誤提示
+      }
+    });
+
+  }
+
+
+
 
   // 確認頁測試
   test() {

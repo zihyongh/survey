@@ -17,6 +17,7 @@ import { EditService } from '../../../@services/edit-service';
 import { TestDataService } from '../../../@services/test-data-service';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { HttpClientService } from '../../../@services/http-client.service';
+import { ReadonlyService } from '../../../@services/readonly-service';
 
 @Component({
   selector: 'app-back-list',
@@ -43,7 +44,8 @@ export class BackListComponent {
     private dateService: DateService,
     private router: Router,
     private editService: EditService,
-    private http: HttpClientService
+    private http: HttpClientService,
+    private readonlyService: ReadonlyService
   ) { }
 
 
@@ -65,7 +67,7 @@ export class BackListComponent {
       .subscribe({
         next: (res) => {
           if (res.code == 200) {
-            // 格式化數據，特別是將 quesList 的 questionContent 字段轉換為 JSON
+            // 格式化數據，特別是將 quesList 的 questionContent 字串轉換為物件
             const formattedSurvey = {
               id: res.id,
               title: res.title,
@@ -75,7 +77,7 @@ export class BackListComponent {
               published: res.published,
               quesList: res.quesList.map((ques) => ({
                 ...ques,
-                questionContent: ques.questionContent ? JSON.parse(ques.questionContent) : [] // 將字符串解析為對象
+                questionContent: ques.questionContent ? JSON.parse(ques.questionContent) : [] // 將字符串轉為物物件
               }))
             };
             // 將數據存入 EditService
@@ -135,7 +137,7 @@ export class BackListComponent {
     // 設定選取日期最大值為當天+30天
     this.maxDate = this.dateService.changeDateFormat(this.dateService.addDate(new Date(), 180));
 
-    this.loadQuizzes(); // 呼叫方法從後端獲取數據
+    this.loadQuizzes(); // 呼叫方法從後端獲取資料
   }
 
 
@@ -174,6 +176,9 @@ export class BackListComponent {
     const start = new Date(startDate);
     const end = new Date(endDate);
 
+    if(!published){
+      return '未發布'
+    }
     if (today < start) {
       return '未開始';
     } else if (today >= start && today <= end) {
@@ -219,6 +224,16 @@ export class BackListComponent {
       });
   }
 
+  // 清空搜尋條件並恢復問卷列表
+  clearSearch(): void {
+    // 清空搜尋條件
+    this.inputName = '';
+    this.inputStartDate = '';
+    this.inputEndDate = '';
+
+    // 重新載入初始問卷列表
+    this.loadQuizzes();
+  }
 
 
 
@@ -266,6 +281,59 @@ export class BackListComponent {
   }
 
 
+  // 點擊「前往」查看回饋
+  onViewFeedback(quizId: number): void {
+    console.log('查看問卷回饋，問卷 ID:', quizId);
+    this.router.navigate(['/backMain/backFeedback'], { queryParams: { quizId } });
+  }
+
+
+  // 進入唯獨
+  onSelectread(id: number): void {
+    console.log('選中的問卷 ID:', id);
+    const payload = { id }; // 組裝請求體
+    this.http.postApi<{
+      code: number;
+      message: string;
+      id: number;
+      title: string;
+      description: string;
+      startDate: string;
+      endDate: string;
+      published: boolean;
+      quesList: any[];
+    }>('http://localhost:8080/quiz/getById', payload)
+      .subscribe({
+        next: (res) => {
+          if (res.code === 200) {
+            // 格式化數據，特別是將 quesList 的 questionContent 字段轉換為 JSON
+            const formattedSurvey = {
+              id: res.id,
+              title: res.title,
+              description: res.description,
+              startDate: res.startDate,
+              endDate: res.endDate,
+              published: res.published,
+              quesList: res.quesList.map((ques) => ({
+                ...ques,
+                questionContent: ques.questionContent ? JSON.parse(ques.questionContent) : [] // 將字符串解析為對象
+              }))
+            };
+            // 將數據存入 WriteService
+            this.readonlyService.setSurvey(formattedSurvey);
+            console.log("要存入的問題:", formattedSurvey);
+            // 確保資料存儲後直接導航
+            this.router.navigate(['/backMain/backReadonly']);
+          } else {
+            alert('獲取問卷資料失敗，請稍後再試！');
+          }
+        },
+        error: (error) => {
+          console.error('獲取問卷資料失敗:', error);
+          alert('無法連接後端服務，請稍後再試！');
+        }
+      });
+  }
 
 
 

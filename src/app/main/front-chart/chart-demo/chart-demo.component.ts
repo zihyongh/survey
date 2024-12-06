@@ -8,6 +8,7 @@ import { Chart } from 'chart.js/auto'
   templateUrl: './chart-demo.component.html',
   styleUrl: './chart-demo.component.scss'
 })
+
 export class ChartDemoComponent {
 
   @Input() dataId!: string;

@@ -1,39 +1,45 @@
 @import url(//fonts.googleapis.com/earlyaccess/notosanstc.css);
 
+/* 搜尋區域樣式 */
 .sec1 {
-  height: 100px;
-  width: 600px;
-  margin: auto;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  padding: 5px;
-
+  display: flex; /* 讓內容水平排列 */
+  justify-content: space-between; /* 兩邊留空，內容分佈 */
+  align-items: center; /* 垂直居中 */
+  height: 70px;
+  width: 90%; /* 使用百分比以適應不同屏幕 */
+  margin: auto; /* 保證居中 */
+  margin-top: 20px; /* 與上方留些間距 */
+  padding: 10px 20px; /* 內邊距 */
+  background-color: #f9f9f9; /* 背景顏色 */
+  border-radius: 8px; /* 圓角 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 陰影效果 */
 }
 
-/* 搜尋容器通用樣式 */
+/* 搜尋容器 */
 .search-container {
   display: flex;
   align-items: center;
-  gap: 5px;
-  background-color: #f9f9f9;
-  padding: 6px 15px;
-  // box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  gap: 7px; /* 元素之間間距 */
 }
 
-/* 標籤通用樣式 */
+/* 搜尋標籤 */
 .search-label {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   color: #333;
+  width: auto; /* 自適應寬度 */
+  white-space: nowrap; /* 防止文字換行 */
+  text-align: right; /* 如果需要右對齊標籤 */
 }
 
-/* 輸入框通用樣式 */
+/* 搜尋輸入框 */
 .search-input {
   padding: 8px 12px;
   font-size: 14px;
   border: 1px solid #d1d1d1;
   border-radius: 6px;
   outline: none;
+  width: 200px;
   transition: border-color 0.3s ease;
 }
 
@@ -41,9 +47,9 @@
   border-color: #87bfb7;
 }
 
-/* 按鈕通用樣式 */
+/* 搜尋按鈕 */
 .search-button {
-  padding: 8px 16px;
+  padding: 8px 10px;
   font-size: 15px;
   color: #fff;
   background-color: #87bfb7;
@@ -51,68 +57,36 @@
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+
 }
 
 .search-button:hover {
-  background-color: #629890;
+  background-color: #73a9a1;
+  transform: scale(1.05); /* 鼠標懸停時微放大 */
 }
 
-/* 名稱搜尋特定樣式 */
-.name-search-container .search-input {
-  width: 400px;
-}
-
-/* 日期搜尋特定樣式 */
-.date-search-container .search-input {
-  border-radius: 8px;
-}
-
-.date-search-container .search-button {
-  background-color: #a0a8d5;
-}
-
-.date-search-container .search-button:hover {
-  background-color: #7b83b5;
-}
-
-
-// icon區域
-.iconArea {
-  width: 800px;
-  height: 3px;
-  margin: 0 auto;
-}
-
-.material-symbols-rounded {
-  color: #555;
-}
-
-.material-symbols-rounded:hover {
-  color: #d1d1d1;
-}
-
-
-// 表格樣式
-// 表格樣式
+/* 表格區域樣式 */
 .tableArea {
-  width: 800px;
-  margin: auto;
-  margin-top: 40px;
-  gap: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-
+  width: 90%; /* 自動調整寬度以適應不同屏幕 */
+  margin: auto; /* 居中表格 */
+  margin-top: 20px; /* 與搜尋區域保持一定間距 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 加入陰影 */
 }
 
+/* 分頁區域 */
 .pageArea {
-  width: 800px;
+  width: 90%;
   margin: auto;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 10px; /* 與表格保持適當距離 */
+  text-align: center;
   font-family: "Noto Serif TC", serif;
 }
 
+/* 表格內容樣式 */
 .mat-mdc-row {
   height: 40px !important;
-  // background-color: antiquewhite !important;
+  font-size: 15px;
+  text-align: center; /* 水平置中 */
 }
 
 .mat-mdc-row:nth-child(odd) {
@@ -126,11 +100,13 @@
 .mat-mdc-cell,
 .mat-mdc-header-cell {
   border: none !important;
+  text-align: center; /* 水平置中 */
 }
 
 .mat-mdc-header-cell {
   background-color: #A3B0C7 !important;
   font-weight: bold !important;
+  font-size: 18px;
 }
 
 

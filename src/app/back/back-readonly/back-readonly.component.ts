@@ -1,6 +1,8 @@
 import { Router } from '@angular/router';
 import { TestDataService } from './../../../@services/test-data-service';
 import { Component } from '@angular/core';
+import { HttpClientService } from '../../../@services/http-client.service';
+import { ReadonlyService } from '../../../@services/readonly-service';
 
 @Component({
   selector: 'app-back-readonly',
@@ -11,7 +13,12 @@ import { Component } from '@angular/core';
 })
 export class BackReadonlyComponent {
 
-  constructor( private testDataService: TestDataService, private router : Router){}
+  constructor(
+    private testDataService: TestDataService,
+    private router : Router,
+    private http: HttpClientService,
+
+  ){}
 
   survey:any = {};
 
@@ -22,5 +29,7 @@ export class BackReadonlyComponent {
   backToList(){
     this.router.navigateByUrl('/backMain')
   }
+
+
 
 }

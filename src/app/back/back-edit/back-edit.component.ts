@@ -130,6 +130,17 @@ export class BackEditComponent {
         return;
       }
 
+      // 驗證問題不能為空
+      if ((questionType == 'single' || questionType == 'multi') ) {
+        for(let op of this.options){
+          if(op.option.length == 0){
+            this.snackBar.open('選項內容不能為空！', '關閉', { duration: 3000 });
+            return;
+          }
+        }
+
+      }
+
       // 更新選項編號以確保連續
       this.updateOptionNumbers();
 
@@ -145,7 +156,7 @@ export class BackEditComponent {
         questionTitle: this.basicFormGroup2.value.questionTitle,
         questionType: questionType,
         required: this.basicFormGroup2.value.required,
-        questionContent: questionType === 'text' ? [] : [...this.options], // 填充題不需要選項
+        questionContent: questionType == 'text' ? [] : [...this.options], // 填充題不需要選項
       };
 
 
@@ -173,14 +184,15 @@ export class BackEditComponent {
   endDate!: string
   startMinDate!: string;
   endMinDate!: string;
+  
 
 
 
   ngOnInit(): void {
     // 設定選取日期最小值為當天
-    this.startMinDate = this.dateService.changeDateFormat(this.dateService.addDate(new Date(), 2));
+    this.startMinDate = this.dateService.changeDateFormat(this.dateService.addDate(new Date(), 0));
     // 設定選取日期最小值為當天+天
-    this.endMinDate = this.dateService.changeDateFormat(this.dateService.addDate(new Date(), 7));
+    this.endMinDate = this.dateService.changeDateFormat(this.dateService.addDate(new Date(), 0));
 
 
     // 獲取 EditService 中的數據
@@ -198,9 +210,9 @@ export class BackEditComponent {
   loadSurveyData(survey: any) {
     this.survey = survey;
 
-    // 確保 quesList 存在且為數組
+    // 確保 quesList 存在且為陣列
     const questionList = survey.quesList || [];
-    console.log('原始问题数据:', questionList);
+    console.log('原使問題數據:', questionList);
 
     try {
       // 將基本問卷資料填入 basicFormGroup1
@@ -245,48 +257,6 @@ export class BackEditComponent {
     console.log(this.survey);                                 // 確認資料是否成功添加
     this.backService.BackAnswer = this.survey;                // 存入service
   }
-
-
-  prepareUpdatePayload(): any {
-    const payload = {
-      id: this.survey.id, // 確保傳遞正確的問卷 ID
-      title: this.basicFormGroup1.value.title,
-      description: this.basicFormGroup1.value.description,
-      startDate: this.basicFormGroup1.value.startDate,
-      endDate: this.basicFormGroup1.value.endDate,
-      published: this.survey.published || false, // 如果未提供 `published` 默認為 false
-      quesList: this.questionData.map((q) => ({
-        quizId: this.survey.id,   // 綁定 Quiz ID
-        questionId: q.questionId,
-        questionTitle: q.questionTitle,
-        questionType: q.questionType,
-        required: q.required,
-        questionContent: JSON.stringify(q.questionContent), // 將選項轉為 JSON 字符串
-      })),
-    };
-    console.log('更新 Payload:', payload); // 檢查傳遞的數據
-    return payload;
-  }
-
-
-
-  finalizeSurvey(): void {
-    const updatePayload = this.prepareUpdatePayload(); // 整理數據
-    this.http.putApi('http://localhost:8080/quiz/update', updatePayload)
-      .subscribe({
-        next: (res) => {
-          console.log('成功儲存:', res);
-          alert('問卷已更新！'); // 顯示成功提示
-          this.editService.resetSurvey(); // 儲存成功後清空
-          this.router.navigateByUrl('/backMain'); // 成功後跳轉頁面
-        },
-        error: (error) => {
-          console.error('儲存過程中出現錯誤:', error);
-          alert('更新失敗，請稍後再試！'); // 顯示錯誤提示
-        }
-      });
-  }
-
 
 
 
@@ -335,6 +305,90 @@ export class BackEditComponent {
     this.editIndex = index;
   }
 
+
+  // 更新問題前整理資料
+  prepareUpdatePayload(): any {
+    const payload = {
+      id: this.survey.id, // 確保傳遞正確的問卷 ID
+      title: this.basicFormGroup1.value.title,
+      description: this.basicFormGroup1.value.description,
+      startDate: this.basicFormGroup1.value.startDate,
+      endDate: this.basicFormGroup1.value.endDate,
+      published: false, // 如果未提供 `published` 默認為 false
+      quesList: this.questionData.map((q , index) => ({
+        quizId: this.survey.id,   // 綁定 Quiz ID
+        questionId: index + 1,    // 按順序重新分配 questionId，從 1 開始
+        questionTitle: q.questionTitle,
+        questionType: q.questionType,
+        required: q.required,
+        questionContent: JSON.stringify(q.questionContent), // 將選項轉為 JSON 字符串
+      })),
+    };
+    console.log('更新 Payload:', payload); // 檢查傳遞的數據
+    return payload;
+  }
+
+
+  // 更新並發布問題前整理資料
+  preparePublishPayload(): any {
+    const payload = {
+      id: this.survey.id,    // 確保傳遞正確的問卷 ID
+      title: this.basicFormGroup1.value.title,
+      description: this.basicFormGroup1.value.description,
+      startDate: this.basicFormGroup1.value.startDate,
+      endDate: this.basicFormGroup1.value.endDate,
+      published: true,        // 發布狀態改為 true
+      quesList: this.questionData.map((q , index) => ({
+        quizId: this.survey.id,   // 綁定 Quiz ID
+        questionId: index + 1,    // 按順序重新分配 questionId，從 1 開始
+        questionTitle: q.questionTitle,
+        questionType: q.questionType,
+        required: q.required,
+        questionContent: JSON.stringify(q.questionContent), // 將選項轉為 JSON 字符串
+      })),
+    };
+    console.log('更新 Payload:', payload); // 檢查傳遞的數據
+    return payload;
+  }
+
+
+
+  finalizeSurvey(): void {
+    const updatePayload = this.prepareUpdatePayload(); // 整理數據
+    this.http.putApi('http://localhost:8080/quiz/update', updatePayload)
+      .subscribe({
+        next: (res) => {
+          console.log('成功儲存:', res);
+          alert('問卷已更新！'); // 顯示成功提示
+          this.editService.resetSurvey(); // 儲存成功後清空
+          this.router.navigateByUrl('/backMain'); // 成功後跳轉頁面
+        },
+        error: (error) => {
+          console.error('儲存過程中出現錯誤:', error);
+          alert('更新失敗，請稍後再試！'); // 顯示錯誤提示
+        }
+      });
+  }
+
+
+
+
+  finalizeSurveyAndPublish(): void {
+    const updatePayload = this.preparePublishPayload(); // 整理數據
+    this.http.putApi('http://localhost:8080/quiz/update', updatePayload)
+      .subscribe({
+        next: (res) => {
+          console.log('成功儲存:', res);
+          alert('問卷已更新並發布！'); // 顯示成功提示
+          this.editService.resetSurvey(); // 儲存成功後清空
+          this.router.navigateByUrl('/backMain'); // 成功後跳轉頁面
+        },
+        error: (error) => {
+          console.error('儲存過程中出現錯誤:', error);
+          alert('更新失敗，請稍後再試！'); // 顯示錯誤提示
+        }
+      });
+  }
 
 
 

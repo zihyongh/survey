@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ChartDemoComponent } from './chart-demo.component';
+import { TotalChartDemoComponent } from './total-chart-demo.component';
 
-describe('ChartDemoComponent', () => {
-  let component: ChartDemoComponent;
-  let fixture: ComponentFixture<ChartDemoComponent>;
+describe('TotalChartDemoComponent', () => {
+  let component: TotalChartDemoComponent;
+  let fixture: ComponentFixture<TotalChartDemoComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ChartDemoComponent]
+      imports: [TotalChartDemoComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ChartDemoComponent);
+    fixture = TestBed.createComponent(TotalChartDemoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,8 +1,8 @@
 <main id="main">
   <!-- 題目和說明 -->
   <div class="title" id="title">
-    <h1 id="big">{{confirmSurvey.title}}</h1>
-    <p id="small">{{confirmSurvey.describe}}</p>
+    <h1 id="big">{{ feedback.quizName }}</h1>
+    <p id="small">{{ feedback.quizDesc }}</p>
   </div>
 
 
@@ -11,61 +11,69 @@
 
     <div class="form-group">
       <span>姓名:</span>
-      {{confirmAnswers.name}}
+      {{feedback.name}}
     </div>
 
     <div class="form-group">
       <span>電話:</span>
-      {{confirmAnswers.phone}}
+      {{feedback.phone}}
     </div>
 
     <div class="form-group">
       <span>Email:</span>
-      {{confirmAnswers.email}}
+      {{feedback.email}}
 
     </div>
 
     <div class="form-group">
       <span>年齡:</span>
-      {{confirmAnswers.age}}
+      {{feedback.age}}
     </div>
 
   </div>
 
+  <!-- <div class="questionArea"> -->
+
   <div class="questionArea">
+    @for (answer of feedback.answers; track $index){
+      <p>題目: {{ answer.question }}</p>
+      <p>答案: {{ answer.answer.join(', ') }}</p>
+    }
+  </div>
+
 
     <!-- 題目答案確認 -->
-    @for (title of confirmSurvey.questionData; track $index ; let i = $index) {
-      <p>{{i + 1}}.{{title.questionTitle}}</p>
+    <!-- @for (answer of feedback.answers; track $index ; let i = $index) {
+      <p>{{i + 1}}.{{title.questionTitle}}</p> -->
 
       <!-- 單選 -->
-      @if(title.questionType == 'single'){
+      <!-- @if(title.questionType == 'single'){
         @for (option  of title.questionContent; track $index) {
           @if(option.optionName === getAnswerByQuestionId(title.questionId)){
             <p>{{option.option }}</p>
           }
         }
-      }
+      } -->
       <!-- 多選 -->
-      @if (title.questionType == 'multi') {
+      <!-- @if (title.questionType == 'multi') {
         @for (option of title.questionContent; track $index){
           @if (getAnswerByQuestionId(title.questionId)?.includes(option.optionName)) {
             <p>答案: {{ option.option }}</p>
           }
        }
-      }
+      } -->
       <!-- 填充 -->
-      @if (title.questionType === 'text') {
+      <!-- @if (title.questionType === 'text') {
         <p>{{ getAnswerByQuestionId(title.questionId) }}</p>
       }
-    }
+    } -->
 
 
     <!-- 按鈕 -->
     <div style="text-align: right;">
-      <button (click)="backToSurvey()">回上頁</button>
+      <button (click)="backToFeedback()">回上頁</button>
     </div>
     <br>
 
-  </div>
+
 </main>

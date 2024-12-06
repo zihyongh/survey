@@ -1,0 +1,13 @@
+<div class="title">{{title}}</div>
+@for (mySurvey of survey.questionData; track $index) {
+  @if(mySurvey.questionType != 'text'){
+    <app-chart-demo class="chartCss" [dataId]="mySurvey.questionId" [questData]="mySurvey"></app-chart-demo>
+    <br><br>
+  }
+}
+
+
+<!-- 按鈕 -->
+<div class="buttonArea">
+  <button (click)="back()">回上頁</button>
+</div>

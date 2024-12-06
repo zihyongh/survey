@@ -5,7 +5,7 @@
       <br>
       <p>使用帳號密碼登入</p>
     </div>
-    <form [formGroup]="loginGroup">
+    <form [formGroup]="loginGroup"  (ngSubmit)="login()">
       <div class="loginArea">
         <label for="account">帳號</label>
         <input id="account" placeholder="請輸入帳號" formControlName="account">
@@ -17,7 +17,8 @@
           <mat-icon fontIcon="{{showPassword? 'visibility' : 'visibility_off'}}" (click)="changePasswordIcon()"></mat-icon>
         </span>
       </div>
-      <button class="btn btn-signin" (click)="login();showFormData()" [disabled]="!loginGroup.valid">登入</button>
+      <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+      <button class="btn btn-signin" type="submit" [disabled]="!loginGroup.valid">登入</button>
     </form>
   </div>
 </div>

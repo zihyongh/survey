@@ -1,101 +1,81 @@
 <main id="main">
   <!-- 題目和說明 -->
   <div class="title" id="title">
-    <h1 id="big">{{survey.title}}</h1>
-    <p id="small">{{survey.describe}}</p>
+    <h1 id="big">{{ survey.title }}</h1>
+    <p id="small">{{ survey.description }}</p>
   </div>
 
-
-  <form [formGroup]="basicFormGroup" >
-
+  <form *ngIf="survey">
     <!-- 基本資料輸入欄 -->
     <div class="form-container">
       <div class="form-group">
         <label for="name">姓名:</label>
-        <input type="text" id="name" placeholder="請輸入姓名(必填)" formControlName="name" >
-        <div *ngIf="basicFormGroup.get('name')?.invalid && basicFormGroup.get('name')?.touched" class="error">
-          此欄為必填!
-        </div>
+        <input type="text" id="name" placeholder="請輸入姓名" [(ngModel)]="formData.name" name="name" required>
+        <div *ngIf="!formData.name" class="error">此欄為必填!</div>
       </div>
 
       <div class="form-group">
         <label for="phone">手機:</label>
-        <input type="tel" id="phone" placeholder="請輸入手機號碼(必填)" formControlName="phone" >
-        <div *ngIf="basicFormGroup.get('phone')?.errors?.['required'] && basicFormGroup.get('phone')?.touched" class="error">
-          此欄為必填!
-        </div>
+        <input type="tel" id="phone" placeholder="請輸入手機號碼" [(ngModel)]="formData.phone" name="phone" required>
+        <div *ngIf="!formData.phone" class="error">此欄為必填!</div>
       </div>
 
       <div class="form-group">
         <label for="email">E-mail:</label>
-        <input type="email" id="email" placeholder="請輸入E-mail" formControlName="email">
-        <div *ngIf="basicFormGroup.get('email')?.errors?.['email'] && basicFormGroup.get('email')?.touched" class="error">
-          請輸入有效的 Email 格式!
-        </div>
+        <input type="email" id="email" placeholder="請輸入E-mail" [(ngModel)]="formData.email" name="email" required>
+        <div *ngIf="formData.email && !emailValid" class="error">請輸入有效的 Email 格式!</div>
+        <div *ngIf="!formData.email" class="error">此欄為必填!</div>
       </div>
 
       <div class="form-group">
         <label for="age">年齡:</label>
-        <input type="number" id="age" placeholder="請輸入年齡" formControlName="age">
-        <div *ngIf="basicFormGroup.get('age')?.errors?.['min'] && basicFormGroup.get('age')?.touched" class="error">
-          年齡不得小於 0!
-        </div>
-        <div *ngIf="basicFormGroup.get('age')?.errors?.['max'] && basicFormGroup.get('age')?.touched" class="error">
-          年齡不得大於 120!
-        </div>
+        <input type="number" id="age" placeholder="請輸入年齡" [(ngModel)]="formData.age" name="age" min="0" max="120">
       </div>
     </div>
 
-
     <!-- 題目區域 -->
     <div class="questionArea">
-
-      @for (question of survey.questionData; track $index) {
-        <p>{{question.questionId}}.{{question.questionTitle}}
-        @if (question.required){
-          <span style="color:brown">*</span>
-        }
+      <ng-container *ngFor="let question of survey.quesList; let i = index">
+        <p>{{ i + 1 }}. {{ question.questionTitle }}
+          <span *ngIf="question.required" style="color: brown">*</span>
+          <span *ngIf="question.questionType == 'multi' ">(多選)</span>
         </p>
 
-
         <!-- 單選題 -->
-        @if(question.questionType == 'single') {
-          @for (option of question.questionContent; track $index) {
-            <label class="option-label">
-              <input type="radio" [value]="option.optionName" [formControlName]="'question'  + question.questionId">
-              {{option.option}}
-            </label>
-            <br>
-          }
-        }
+        <div *ngIf="question.questionType === 'single'">
+          <label *ngFor="let option of question.questionContent">
+            <input
+              type="radio"
+              [(ngModel)]="formData.answers[question.questionId]"
+              [value]="option.option"
+              [name]="'question' + question.questionId">
+            {{ option.option }}
+          </label>
+        </div>
 
         <!-- 多選題 -->
-        @if(question.questionType == 'multi') {
-          @for (option of question.questionContent; track $index) {
-            <label class="option-label">
-              <input type="checkbox" [checked]="selectedOptions[question.questionId].includes(option.optionName)"
-              (change)="onCheckboxChange(question.questionId, option.optionName, $event)"
-              >
-              {{option.option}}
-            </label>
-            <br>
-          }
-        }
+        <div *ngIf="question.questionType === 'multi'">
+          <label *ngFor="let option of question.questionContent">
+            <input
+              type="checkbox"
+              [checked]="formData.answers[question.questionId]?.includes(option.option)"
+              (change)="onCheckboxChange(question.questionId, option.option, $event)">
+            {{ option.option }}
+          </label>
+        </div>
 
         <!-- 填充題 -->
-        @if(question.questionType == 'text') {
-          <textarea [formControlName]="'question' + question.questionId" placeholder="請輸入答案"></textarea>
-          <br>
-          <br>
-        }
-      }
-
+        <div *ngIf="question.questionType === 'text'">
+          <textarea [(ngModel)]="formData.answers[question.questionId]" [name]="'question' + question.questionId" placeholder="請輸入答案"></textarea>
+        </div>
+      </ng-container>
     </div>
 
-    <div style="text-align: right;">
+    <!-- 按鈕 -->
+    <div style="text-align: right; padding: 10px;">
       <button style="margin-right: 5px;" type="button" (click)="backToList()">回上頁</button>
-      <button type="button" (click)="saveAnswersToService()" [disabled]="!basicFormGroup.valid">預覽</button>
+      <button type="button" (click)="submitSurvey()" >預覽</button>
     </div>
-
   </form>
 </main>
+

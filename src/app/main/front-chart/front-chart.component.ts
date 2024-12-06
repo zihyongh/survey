@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ChartDemoComponent } from './chart-demo/chart-demo.component';
+import { HttpClientService } from '../../../@services/http-client.service';
 
 
 @Component({
@@ -10,7 +11,13 @@ import { ChartDemoComponent } from './chart-demo/chart-demo.component';
   templateUrl: './front-chart.component.html',
   styleUrl: './front-chart.component.scss'
 })
+
 export class FrontChartComponent {
+
+  constructor(
+    private router: Router,
+    private http: HttpClientService
+  ) {}
 
   survey = {
     title: '明星調查',
@@ -45,7 +52,7 @@ export class FrontChartComponent {
     ]
   }
 
-  constructor(private router: Router){}
+
 
 
   backToSurvey() {
