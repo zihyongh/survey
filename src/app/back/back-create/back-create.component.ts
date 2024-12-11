@@ -38,17 +38,13 @@ export class BackCreateComponent {
     private backService: BackService,
     private router: Router,
     private snackBar: MatSnackBar,
-    private http: HttpClientService
+    private http: HttpClientService,
+    private fb: FormBuilder
   ) {}
 
 
   // 必填設定
-  basicFormGroup1 = new FormGroup({
-    title: new FormControl('', Validators.required),       // 設置名稱欄必填
-    description: new FormControl('', Validators.required),   // 設置說明欄必填
-    startDate: new FormControl('', Validators.required),  // 設置日期選擇器欄位為必填
-    endDate: new FormControl('', Validators.required)     // 另一個日期選擇器欄位為必填
-  });
+  basicFormGroup1!: FormGroup; // 只定義變數，稍後再初始化
 
   basicFormGroup2 = new FormGroup({
     questionTitle: new FormControl('', Validators.required),
@@ -182,25 +178,59 @@ export class BackCreateComponent {
   startMinDate!: string;
   endMinDate!: string;
   startDate!: string;
-  inputStartDate!:string;
+
 
 
   // 日期轉換
   ngOnInit(): void {
 
-    // 設定選取日期最小值為當天
-    this.startMinDate = this.dateService.changeDateFormat(this.dateService.addDate(new Date(), 0));
-    console.log('當前預覽問卷:', this.survey);
+    const today = new Date();
+    const formattedDate = today.toISOString().split('T')[0]; // 取得今天的日期 (yyyy-MM-dd)
 
+    // 設定最小的開始日期和結束日期
+    this.startMinDate = formattedDate;
+    this.endMinDate = formattedDate;
+
+    // 使用 FormBuilder 建立 FormGroup，只保留這個定義
+    this.basicFormGroup1 = this.fb.group({
+      title: ['', Validators.required], // 新增 title 欄位
+      description: ['', Validators.required], // 新增 description 欄位
+      startDate: [formattedDate, Validators.required],
+      endDate: [formattedDate, Validators.required]
+    });
+
+     // 監聽開始日期的變更，動態更新結束日期的最小值
+     this.basicFormGroup1.get('startDate')?.valueChanges.subscribe(startDateValue => {
+      if (startDateValue) {
+        this.updateEndDateMin(startDateValue);
+      }
+    });
+
+    
   }
 
+   // 動態更新結束日期的最小可選擇日期
+   updateEndDateMin(startDateValue: string) {
+    const newEndMinDate = this.dateService.changeDateFormat(
+      this.dateService.addDate(new Date(startDateValue), 0) // 增加0天，表示不能早於開始日期
+    );
+    this.endMinDate = newEndMinDate;
 
+    const endDateValue = this.basicFormGroup1.get('endDate')?.value;
 
-  // 隨開始日期變動，改變結束日期
+    // 如果 endDate 小於新的最小值，則自動調整
+    if (endDateValue && endDateValue < newEndMinDate) {
+      this.basicFormGroup1.patchValue({ endDate: newEndMinDate });
+    }
+  }
+
+  // 手動變更開始日期的事件
   changeSDate() {
-    this.endMinDate = this.dateService.changeDateFormat(this.dateService.addDate(new Date(this.inputStartDate), 0));
+    const startDateValue = this.basicFormGroup1.get('startDate')?.value;
+    if (startDateValue) {
+      this.updateEndDateMin(startDateValue);
+    }
   }
-
 
 
 

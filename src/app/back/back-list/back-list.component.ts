@@ -249,8 +249,8 @@ export class BackListComponent {
   // 刪除資料
   deleteSelected() {
     const selectedIds = this.dataSource.data
-      .filter(element => element.selected) // 篩選出選中的問卷
-      .map(element => element.id); // 取得問卷的 ID 列表
+      .filter(element => element.selected)    // 篩選出選中的問卷
+      .map(element => element.id);            // 取得問卷的 ID 列表
 
     if (selectedIds.length === 0) {
       alert('請選擇要刪除的問卷！');
