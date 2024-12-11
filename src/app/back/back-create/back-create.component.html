@@ -134,7 +134,6 @@
             <th>問題</th>
             <th>題目類型</th>
             <th>必填</th>
-            <th>選項</th>
           </tr>
         </thead>
         <tbody>
@@ -155,15 +154,6 @@
               }
             </td>
             <td>{{ myQ.required == true ? '是' : '' }}</td>
-            <td>
-              @if(myQ.questionType !== 'text') {
-                <ul>
-                  @for (option of myQ.questionContent; track $index) {
-                    <li>{{ option.option }}</li>
-                  }
-                </ul>
-              }
-            </td>
             <td><mat-icon (click)="editQuestion(i)" style="cursor: pointer;">edit</mat-icon></td>
             </tr>
             }
