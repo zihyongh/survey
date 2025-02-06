@@ -36,8 +36,9 @@
 
   <div class="questionArea">
     @for (answer of feedback.answers; track $index){
-      <p>題目: {{ answer.question }}</p>
+      <p>{{ answer.question }}</p>
       <p>答案: {{ answer.answer.join(', ') }}</p>
+      <br>
     }
   </div>
 

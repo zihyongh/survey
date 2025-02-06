@@ -109,6 +109,23 @@
   font-size: 18px;
 }
 
+/* 僅針對 title 欄位的內容 */
+.title-cell {
+  text-align: left !important; /* 內容靠左 */
+  padding-left: 50px !important; /* 讓標題稍微往右移 */
+}
 
 
+.pageArea .mat-mdc-paginator-page-size-label {
+  visibility: hidden;
+}
+
+.mat-mdc-paginator-page-size-label ::before{
+  visibility: hidden !important; /* 隱藏原本的 Items per page: */
+}
+
+.mat-mdc-paginator-page-size-label::after {
+  visibility: visible !important; /* 重新顯示自定義的文字 */
+  content: '顯示筆數' !important;
+}
 

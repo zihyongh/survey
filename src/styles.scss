@@ -1,2 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 @import url('https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&family=Noto+Serif+TC:wght@200..900&display=swap');
+
+.mat-mdc-paginator-page-size-label {
+  visibility: hidden;
+}
+
+.mat-mdc-paginator-page-size-label::after {
+  visibility: visible ; /* 重新顯示自定義的文字 */
+  content: '顯示筆數:' ;
+}

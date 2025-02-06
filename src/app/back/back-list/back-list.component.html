@@ -52,7 +52,7 @@
     <!-- name Column -->
     <ng-container matColumnDef="title">
       <th mat-header-cell *matHeaderCellDef> 名稱 </th>
-      <td mat-cell *matCellDef="let element">
+      <td mat-cell *matCellDef="let element" class="title-cell">
         <!-- 進修改頁面 -->
         <ng-container *ngIf="element.status == '未發布' || element.status == '未開始'">
           <a (click)="onSelectSurvey(element.id)" [routerLink]="['/backMain/backEdit']"> {{ element.title }} </a>

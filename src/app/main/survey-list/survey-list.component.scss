@@ -109,3 +109,9 @@
   font-size: 18px;
 }
 
+
+/* 僅針對 title 欄位的內容 */
+.title-cell {
+  text-align: left !important; /* 內容靠左 */
+  padding-left: 50px !important; /* 讓標題稍微往右移 */
+}

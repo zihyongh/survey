@@ -40,14 +40,13 @@
 
       <!-- 單選 -->
       @if(question.questionType == 'single'){
-        <p>答案: {{ previewAns.answers[question.questionId]  || '未填寫' }}</p>
+        <p>{{ previewAns.answers[question.questionId]  || '未填寫' }}</p>
         }
 
 
         <!-- 多選 -->
         @if (question.questionType == 'multi') {
           @if(previewAns.answers[question.questionId]?.length){
-            <p>答案:</p>
             @for (option of previewAns.answers[question.questionId]; track $index) {
               <p>-{{ option }}</p>
             }
@@ -59,7 +58,7 @@
 
         <!-- 填充 -->
         @if(question.questionType == 'text'){
-        <p>答案: {{ previewAns.answers[question.questionId] || '未填寫'  }}</p>
+        <p>{{ previewAns.answers[question.questionId] || '未填寫'  }}</p>
         }
       }
 
